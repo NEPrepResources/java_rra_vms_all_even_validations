@@ -1,6 +1,7 @@
 package com.rra.vehicletracking.controller;
 
 import com.rra.vehicletracking.dto.PlateNumberDTO;
+import com.rra.vehicletracking.entity.PlateNumber;
 import com.rra.vehicletracking.service.PlateNumberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Tag(name = "Plate Numbers", description = "Endpoints for managing vehicle plate numbers")
 @RestController
@@ -30,9 +34,15 @@ public class PlateNumberController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @PostMapping
-    public ResponseEntity<?> registerPlateNumber(@Valid @RequestBody PlateNumberDTO plateNumberDTO) {
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> registerPlateNumber(@Valid @RequestBody PlateNumberDTO plateNumberDTO) {
         plateNumberService.registerPlateNumber(plateNumberDTO);
-        return ResponseEntity.ok("Plate number registered successfully");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("plateNumber", plateNumberDTO.getPlateNumber());
+        response.put("ownerId", plateNumberDTO.getOwnerId());
+        response.put("issuedDate", plateNumberDTO.getIssuedDate());
+
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number registered successfully", response));
     }
 
     @Operation(summary = "List plate numbers by owner", description = "Retrieves a paginated list of plate numbers for a specific owner.")
@@ -42,11 +52,12 @@ public class PlateNumberController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<Page<PlateNumberDTO>> listPlateNumbersByOwner(
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Page<PlateNumberDTO>>> listPlateNumbersByOwner(
             @Parameter(description = "Owner ID", example = "1") @PathVariable Long ownerId,
             @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Number of items per page", example = "10") @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(plateNumberService.listPlateNumbersByOwner(ownerId, page, size));
+        Page<PlateNumberDTO> plateNumbers = plateNumberService.listPlateNumbersByOwner(ownerId, page, size);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate numbers retrieved successfully", plateNumbers));
     }
 
     @Operation(summary = "Update plate number", description = "Admin updates an existing plate number's details by ID.")
@@ -57,11 +68,18 @@ public class PlateNumberController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePlateNumber(
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> updatePlateNumber(
             @Parameter(description = "Plate number ID", example = "1") @PathVariable Long id,
             @Valid @RequestBody PlateNumberDTO plateNumberDTO) {
         plateNumberService.updatePlateNumber(id, plateNumberDTO);
-        return ResponseEntity.ok("Plate number updated successfully");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", id);
+        response.put("plateNumber", plateNumberDTO.getPlateNumber());
+        response.put("ownerId", plateNumberDTO.getOwnerId());
+        response.put("issuedDate", plateNumberDTO.getIssuedDate());
+
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number updated successfully", response));
     }
 
     @Operation(summary = "Delete plate number", description = "Admin deletes a plate number by ID, if not in use.")
@@ -72,9 +90,14 @@ public class PlateNumberController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePlateNumber(
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> deletePlateNumber(
             @Parameter(description = "Plate number ID", example = "1") @PathVariable Long id) {
         plateNumberService.deletePlateNumber(id);
-        return ResponseEntity.ok("Plate number deleted successfully");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", id);
+        response.put("status", "deleted");
+
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number deleted successfully", response));
     }
 }

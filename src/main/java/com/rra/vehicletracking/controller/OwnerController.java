@@ -72,10 +72,24 @@ public class OwnerController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @GetMapping
-    public ResponseEntity<Page<OwnerDTO>> listOwners(
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Page<OwnerDTO>>> listOwners(
             @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Number of items per page", example = "10") @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(ownerService.listOwners(page, size));
+        Page<OwnerDTO> owners = ownerService.listOwners(page, size);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Owners retrieved successfully", owners));
+    }
+
+    @Operation(summary = "Get owner by ID", description = "Retrieves a specific owner by their ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Owner retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Owner not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<OwnerDTO>> getOwnerById(
+            @Parameter(description = "Owner ID", example = "1") @PathVariable Long id) {
+        OwnerDTO owner = ownerService.getOwnerById(id);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Owner retrieved successfully", owner));
     }
 
     @Operation(summary = "Search owners", description = "Searches owners by national ID, email, or phone with pagination.")
@@ -85,11 +99,12 @@ public class OwnerController {
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
     @GetMapping("/search")
-    public ResponseEntity<Page<OwnerDTO>> searchOwner(
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Page<OwnerDTO>>> searchOwner(
             @Parameter(description = "Search query (national ID, email, or phone)", example = "1199005123456789") @RequestParam String query,
             @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Number of items per page", example = "10") @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(ownerService.searchOwner(query, page, size));
+        Page<OwnerDTO> owners = ownerService.searchOwner(query, page, size);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Matching owners retrieved successfully", owners));
     }
 
     @Operation(summary = "Update owner details", description = "Admin updates an existing owner's details by ID.")

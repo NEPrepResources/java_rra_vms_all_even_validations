@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 @Schema(description = "Data transfer object for vehicle owner information")
 public class OwnerDTO {
+    @Schema(description = "Unique identifier of the owner", example = "1")
+    private Long id;
     @NotBlank(message = "Name is required")
     @Schema(description = "Full name of the owner", example = "John Doe", required = true)
     private String name;

@@ -43,6 +43,7 @@ public class OwnerService {
         return ownerRepository.findAll(pageable)
                 .map(owner -> {
                     OwnerDTO dto = new OwnerDTO();
+                    dto.setId(owner.getId());
                     dto.setName(owner.getName());
                     dto.setNationalId(owner.getNationalId());
                     dto.setEmail(owner.getEmail());
@@ -57,6 +58,7 @@ public class OwnerService {
         return ownerRepository.searchByQuery(query, pageable)
                 .map(owner -> {
                     OwnerDTO dto = new OwnerDTO();
+                    dto.setId(owner.getId());
                     dto.setName(owner.getName());
                     dto.setNationalId(owner.getNationalId());
                     dto.setEmail(owner.getEmail());
@@ -82,6 +84,21 @@ public class OwnerService {
         logger.info("Owner updated: {}", owner.getNationalId());
         return owner;
     }
+    public OwnerDTO getOwnerById(Long id) {
+        Owner owner = ownerRepository.findById(id)
+                .orElseThrow(() -> new CustomException("Owner not found"));
+
+        OwnerDTO dto = new OwnerDTO();
+        dto.setId(owner.getId());
+        dto.setName(owner.getName());
+        dto.setNationalId(owner.getNationalId());
+        dto.setEmail(owner.getEmail());
+        dto.setPhone(owner.getPhone());
+        dto.setAddress(owner.getAddress());
+
+        return dto;
+    }
+
     public Owner deleteOwner(Long id) {
         Owner owner = ownerRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Owner not found"));

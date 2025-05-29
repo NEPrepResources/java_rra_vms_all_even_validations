@@ -67,6 +67,7 @@ public class VehicleService {
         return vehicleRepository.findAll(pageable)
                 .map(vehicle -> {
                     VehicleDTO dto = new VehicleDTO();
+                    dto.setId(vehicle.getId());
                     dto.setChassisNumber(vehicle.getChassisNumber());
                     dto.setManufactureCompany(vehicle.getManufactureCompany());
                     dto.setManufactureYear(vehicle.getManufactureYear());
@@ -83,6 +84,7 @@ public class VehicleService {
         return vehicleRepository.searchByQuery(query, pageable)
                 .map(vehicle -> {
                     VehicleDTO dto = new VehicleDTO();
+                    dto.setId(vehicle.getId());
                     dto.setChassisNumber(vehicle.getChassisNumber());
                     dto.setManufactureCompany(vehicle.getManufactureCompany());
                     dto.setManufactureYear(vehicle.getManufactureYear());
@@ -186,6 +188,23 @@ public class VehicleService {
         plateNumberRepository.save(plateNumber);
         plateNumberRepository.save(vehicle.getPlateNumber());
         logger.info("Vehicle updated: {}", vehicle.getChassisNumber());
+    }
+
+    public VehicleDTO getVehicleById(Long id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new CustomException("Vehicle not found"));
+
+        VehicleDTO dto = new VehicleDTO();
+        dto.setId(vehicle.getId());
+        dto.setChassisNumber(vehicle.getChassisNumber());
+        dto.setManufactureCompany(vehicle.getManufactureCompany());
+        dto.setManufactureYear(vehicle.getManufactureYear());
+        dto.setPrice(vehicle.getPrice());
+        dto.setModelName(vehicle.getModelName());
+        dto.setOwnerId(vehicle.getOwner().getId());
+        dto.setPlateNumberId(vehicle.getPlateNumber().getId());
+
+        return dto;
     }
 
     public void deleteVehicle(Long id) {
