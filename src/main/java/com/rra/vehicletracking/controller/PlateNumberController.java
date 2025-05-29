@@ -41,6 +41,7 @@ public class PlateNumberController {
         response.put("plateNumber", plateNumberDTO.getPlateNumber());
         response.put("ownerId", plateNumberDTO.getOwnerId());
         response.put("issuedDate", plateNumberDTO.getIssuedDate());
+        response.put("inUse", plateNumberDTO.isInUse());
 
         return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number registered successfully", response));
     }

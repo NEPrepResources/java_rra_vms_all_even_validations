@@ -106,7 +106,6 @@ public class OwnerService {
             throw new CustomException("Cannot delete owner with associated vehicles");
         }
 
-        // Create a copy of the owner details before deletion
         Owner deletedOwner = new Owner();
         deletedOwner.setId(owner.getId());
         deletedOwner.setName(owner.getName());

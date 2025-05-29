@@ -20,4 +20,7 @@ public class PlateNumberDTO {
 
     @NotNull(message = "Issued date is required")
     private LocalDate issuedDate;
+
+    @Schema(description = "Status of the plate number (true if in use, false if available)", example = "false")
+    private boolean inUse;
 }

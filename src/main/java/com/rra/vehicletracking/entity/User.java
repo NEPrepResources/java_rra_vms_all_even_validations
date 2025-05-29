@@ -50,8 +50,6 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // --- UserDetails implementation methods below ---
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(() -> role.name());
@@ -59,7 +57,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // Or return nationalId if you authenticate with it
+        return this.email;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,29 @@ public class GlobalExceptionHandler {
 
         ApiResponse<Map<String, String>> response = new ApiResponse<>("error", "Validation failed", errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        logger.error("JSON parse error: {}", ex.getMessage());
+
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("message", "Invalid JSON format. Please provide a properly formatted JSON object.");
+        errorDetails.put("example", createExampleJson());
+
+        ApiResponse<Map<String, Object>> response = new ApiResponse<>("error", 
+            "Invalid JSON format. Please ensure your request body is a valid JSON object.", errorDetails);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private Map<String, Object> createExampleJson() {
+        Map<String, Object> example = new HashMap<>();
+        example.put("vehicleId", 1);
+        example.put("fromOwnerId", 2);
+        example.put("toOwnerId", 3);
+        example.put("transferPrice", 5000.0);
+        example.put("newPlateNumberId", 4);
+        return example;
     }
 
     @ExceptionHandler(Exception.class)

@@ -90,12 +90,34 @@ public class VehicleController {
         return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Matching vehicles retrieved successfully", vehicles));
     }
 
-    @Operation(summary = "Transfer vehicle ownership", description = "Admin transfers a vehicle to a new owner with a new plate number.")
+    @Operation(
+        summary = "Transfer vehicle ownership", 
+        description = "Admin transfers a vehicle to a new owner with a new plate number. " +
+                "The request body must be a valid JSON object with vehicleId, fromOwnerId, toOwnerId, transferPrice, and newPlateNumberId."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Vehicle transferred successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input, vehicle/owner not found, or plate number in use"),
             @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
     })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Vehicle transfer details",
+        required = true,
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            mediaType = "application/json",
+            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = com.rra.vehicletracking.dto.VehicleTransferDTO.class),
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                name = "Vehicle Transfer Example",
+                value = "{\n" +
+                        "  \"vehicleId\": 1,\n" +
+                        "  \"fromOwnerId\": 1,\n" +
+                        "  \"toOwnerId\": 2,\n" +
+                        "  \"transferPrice\": 10000.0,\n" +
+                        "  \"newPlateNumberId\": 2\n" +
+                        "}"
+            )
+        )
+    )
     @PostMapping("/transfer")
     public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> transferVehicle(@Valid @RequestBody VehicleTransferDTO transferDTO) {
         vehicleService.transferVehicle(transferDTO);

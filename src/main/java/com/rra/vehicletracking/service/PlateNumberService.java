@@ -52,6 +52,7 @@ public class PlateNumberService {
                     dto.setPlateNumber(plateNumber.getPlateNumber());
                     dto.setOwnerId(plateNumber.getOwner().getId());
                     dto.setIssuedDate(plateNumber.getIssuedDate());
+                    dto.setInUse(plateNumber.isInUse());
                     return dto;
                 });
     }
@@ -68,6 +69,7 @@ public class PlateNumberService {
                     dto.setPlateNumber(plateNumber.getPlateNumber());
                     dto.setOwnerId(plateNumber.getOwner().getId());
                     dto.setIssuedDate(plateNumber.getIssuedDate());
+                    dto.setInUse(plateNumber.isInUse());
                     return dto;
                 });
     }
@@ -100,6 +102,7 @@ public class PlateNumberService {
         dto.setPlateNumber(plateNumber.getPlateNumber());
         dto.setOwnerId(plateNumber.getOwner().getId());
         dto.setIssuedDate(plateNumber.getIssuedDate());
+        dto.setInUse(plateNumber.isInUse());
 
         return dto;
     }
