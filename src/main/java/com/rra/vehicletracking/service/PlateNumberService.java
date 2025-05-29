@@ -43,6 +43,19 @@ public class PlateNumberService {
         logger.info("Plate number registered: {}", plateNumber.getPlateNumber());
     }
 
+    public Page<PlateNumberDTO> listAllPlateNumbers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return plateNumberRepository.findAll(pageable)
+                .map(plateNumber -> {
+                    PlateNumberDTO dto = new PlateNumberDTO();
+                    dto.setId(plateNumber.getId());
+                    dto.setPlateNumber(plateNumber.getPlateNumber());
+                    dto.setOwnerId(plateNumber.getOwner().getId());
+                    dto.setIssuedDate(plateNumber.getIssuedDate());
+                    return dto;
+                });
+    }
+
     public Page<PlateNumberDTO> listPlateNumbersByOwner(Long ownerId, int page, int size) {
         if (!ownerRepository.existsById(ownerId)) {
             throw new CustomException("Owner not found");
@@ -51,6 +64,7 @@ public class PlateNumberService {
         return plateNumberRepository.findByOwnerId(ownerId, pageable)
                 .map(plateNumber -> {
                     PlateNumberDTO dto = new PlateNumberDTO();
+                    dto.setId(plateNumber.getId());
                     dto.setPlateNumber(plateNumber.getPlateNumber());
                     dto.setOwnerId(plateNumber.getOwner().getId());
                     dto.setIssuedDate(plateNumber.getIssuedDate());
@@ -75,6 +89,19 @@ public class PlateNumberService {
         plateNumber.setIssuedDate(plateNumberDTO.getIssuedDate());
         plateNumberRepository.save(plateNumber);
         logger.info("Plate number updated: {}", plateNumber.getPlateNumber());
+    }
+
+    public PlateNumberDTO getPlateNumberById(Long id) {
+        PlateNumber plateNumber = plateNumberRepository.findById(id)
+                .orElseThrow(() -> new CustomException("Plate number not found"));
+
+        PlateNumberDTO dto = new PlateNumberDTO();
+        dto.setId(plateNumber.getId());
+        dto.setPlateNumber(plateNumber.getPlateNumber());
+        dto.setOwnerId(plateNumber.getOwner().getId());
+        dto.setIssuedDate(plateNumber.getIssuedDate());
+
+        return dto;
     }
 
     public void deletePlateNumber(Long id) {

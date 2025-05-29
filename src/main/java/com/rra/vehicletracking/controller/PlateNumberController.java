@@ -45,6 +45,32 @@ public class PlateNumberController {
         return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number registered successfully", response));
     }
 
+    @Operation(summary = "List all plate numbers", description = "Retrieves a paginated list of all plate numbers.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List of plate numbers retrieved"),
+            @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
+    })
+    @GetMapping
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Page<PlateNumberDTO>>> listAllPlateNumbers(
+            @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of items per page", example = "10") @RequestParam(defaultValue = "10") int size) {
+        Page<PlateNumberDTO> plateNumbers = plateNumberService.listAllPlateNumbers(page, size);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate numbers retrieved successfully", plateNumbers));
+    }
+
+    @Operation(summary = "Get plate number by ID", description = "Retrieves a specific plate number by its ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Plate number retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Plate number not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied (admin role required)")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<PlateNumberDTO>> getPlateNumberById(
+            @Parameter(description = "Plate number ID", example = "1") @PathVariable Long id) {
+        PlateNumberDTO plateNumber = plateNumberService.getPlateNumberById(id);
+        return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number retrieved successfully", plateNumber));
+    }
+
     @Operation(summary = "List plate numbers by owner", description = "Retrieves a paginated list of plate numbers for a specific owner.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of plate numbers retrieved"),
