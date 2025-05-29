@@ -35,13 +35,14 @@ public class PlateNumberController {
     })
     @PostMapping
     public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> registerPlateNumber(@Valid @RequestBody PlateNumberDTO plateNumberDTO) {
-        plateNumberService.registerPlateNumber(plateNumberDTO);
+        PlateNumberDTO createdPlateNumber = plateNumberService.registerPlateNumber(plateNumberDTO);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("plateNumber", plateNumberDTO.getPlateNumber());
-        response.put("ownerId", plateNumberDTO.getOwnerId());
-        response.put("issuedDate", plateNumberDTO.getIssuedDate());
-        response.put("inUse", plateNumberDTO.isInUse());
+        response.put("id", createdPlateNumber.getId());
+        response.put("plateNumber", createdPlateNumber.getPlateNumber());
+        response.put("ownerId", createdPlateNumber.getOwnerId());
+        response.put("issuedDate", createdPlateNumber.getIssuedDate());
+        response.put("inUse", createdPlateNumber.isInUse());
 
         return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number registered successfully", response));
     }
@@ -98,13 +99,14 @@ public class PlateNumberController {
     public ResponseEntity<com.rra.vehicletracking.response.ApiResponse<Map<String, Object>>> updatePlateNumber(
             @Parameter(description = "Plate number ID", example = "1") @PathVariable Long id,
             @Valid @RequestBody PlateNumberDTO plateNumberDTO) {
-        plateNumberService.updatePlateNumber(id, plateNumberDTO);
+        PlateNumberDTO updatedPlateNumber = plateNumberService.updatePlateNumber(id, plateNumberDTO);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("id", id);
-        response.put("plateNumber", plateNumberDTO.getPlateNumber());
-        response.put("ownerId", plateNumberDTO.getOwnerId());
-        response.put("issuedDate", plateNumberDTO.getIssuedDate());
+        response.put("id", updatedPlateNumber.getId());
+        response.put("plateNumber", updatedPlateNumber.getPlateNumber());
+        response.put("ownerId", updatedPlateNumber.getOwnerId());
+        response.put("issuedDate", updatedPlateNumber.getIssuedDate());
+        response.put("inUse", updatedPlateNumber.isInUse());
 
         return ResponseEntity.ok(com.rra.vehicletracking.response.ApiResponse.success("Plate number updated successfully", response));
     }

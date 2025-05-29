@@ -28,7 +28,7 @@ public class PlateNumberService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public void registerPlateNumber(PlateNumberDTO plateNumberDTO) {
+    public PlateNumberDTO registerPlateNumber(PlateNumberDTO plateNumberDTO) {
         if (plateNumberRepository.existsByPlateNumber(plateNumberDTO.getPlateNumber())) {
             throw new CustomException("Plate number " + plateNumberDTO.getPlateNumber() + " already exists");
         }
@@ -39,8 +39,17 @@ public class PlateNumberService {
         plateNumber.setOwner(owner);
         plateNumber.setIssuedDate(plateNumberDTO.getIssuedDate());
         plateNumber.setInUse(false);
-        plateNumberRepository.save(plateNumber);
+        plateNumber = plateNumberRepository.save(plateNumber);
         logger.info("Plate number registered: {}", plateNumber.getPlateNumber());
+
+        // Create and return DTO with correct values
+        PlateNumberDTO dto = new PlateNumberDTO();
+        dto.setId(plateNumber.getId());
+        dto.setPlateNumber(plateNumber.getPlateNumber());
+        dto.setOwnerId(plateNumber.getOwner().getId());
+        dto.setIssuedDate(plateNumber.getIssuedDate());
+        dto.setInUse(plateNumber.isInUse());
+        return dto;
     }
 
     public Page<PlateNumberDTO> listAllPlateNumbers(int page, int size) {
@@ -74,7 +83,7 @@ public class PlateNumberService {
                 });
     }
 
-    public void updatePlateNumber(Long id, PlateNumberDTO plateNumberDTO) {
+    public PlateNumberDTO updatePlateNumber(Long id, PlateNumberDTO plateNumberDTO) {
         PlateNumber plateNumber = plateNumberRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Plate number not found"));
         if (!plateNumber.getPlateNumber().equals(plateNumberDTO.getPlateNumber()) &&
@@ -89,8 +98,17 @@ public class PlateNumberService {
         plateNumber.setPlateNumber(plateNumberDTO.getPlateNumber());
         plateNumber.setOwner(owner);
         plateNumber.setIssuedDate(plateNumberDTO.getIssuedDate());
-        plateNumberRepository.save(plateNumber);
+        plateNumber = plateNumberRepository.save(plateNumber);
         logger.info("Plate number updated: {}", plateNumber.getPlateNumber());
+
+        // Create and return DTO with correct values
+        PlateNumberDTO dto = new PlateNumberDTO();
+        dto.setId(plateNumber.getId());
+        dto.setPlateNumber(plateNumber.getPlateNumber());
+        dto.setOwnerId(plateNumber.getOwner().getId());
+        dto.setIssuedDate(plateNumber.getIssuedDate());
+        dto.setInUse(plateNumber.isInUse());
+        return dto;
     }
 
     public PlateNumberDTO getPlateNumberById(Long id) {
